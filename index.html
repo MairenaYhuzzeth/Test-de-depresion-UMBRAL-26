@@ -190,7 +190,8 @@ function calcularResultado() {
 
     let resultadosHTML = "";
     let mayorPorcentaje = 0;
-    let sintomaPredominante = "";
+    let sintomaPredominante = 0;
+    let sumaPuntos = 0;
 
     for (let i = 1; i <= 10; i++) {
         const r = document.querySelector(`input[name="p${i}"]:checked`);
@@ -200,14 +201,31 @@ function calcularResultado() {
             return;
         }
 
-        const porcentaje = Math.round((parseInt(r.value) / 5) * 100);
+        const valor = parseInt(r.value);
+        const porcentaje = Math.round((valor / 5) * 100);
+        sumaPuntos += valor;
 
         resultadosHTML += `<p>${sintomas[i - 1]}: ${porcentaje}%</p>`;
 
         if (porcentaje > mayorPorcentaje) {
             mayorPorcentaje = porcentaje;
-            sintomaPredominante = sintomas[i - 1];
+            sintomaPredominante = i - 1;
         }
+    }
+
+    const promedio = sumaPuntos / 10;
+    let nivelDepresion = "";
+    let explicacion = "";
+
+    if (promedio <= 2) {
+        nivelDepresion = "Depresión leve";
+        explicacion = "Los síntomas son leves y es posible manejarlos con estrategias de autocuidado y apoyo social.";
+    } else if (promedio <= 4) {
+        nivelDepresion = "Depresión moderada";
+        explicacion = "Los síntomas son más evidentes y podrían afectar tu vida diaria. Se recomienda apoyo profesional.";
+    } else {
+        nivelDepresion = "Depresión severa";
+        explicacion = "Los síntomas son intensos y afectan significativamente la vida diaria. Es importante buscar ayuda profesional cuanto antes.";
     }
 
     const usuario = JSON.parse(localStorage.getItem("usuario"));
@@ -223,7 +241,10 @@ function calcularResultado() {
         ${resultadosHTML}
         <hr>
         <strong>Síntoma predominante:</strong><br>
-        ${sintomaPredominante} (${mayorPorcentaje}%)
+        ${sintomas[sintomaPredominante]} (${mayorPorcentaje}%)
+        <br><br>
+        <strong>Nivel de depresión:</strong> ${nivelDepresion}<br>
+        <em>${explicacion}</em>
         <br><br>
         <em>Este test es orientativo y no reemplaza una evaluación profesional.</em>
     `;
